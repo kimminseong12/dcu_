@@ -10,7 +10,7 @@ struct employee {
 void main() {
 	struct employee Lee;
 	struct employee* Sptr = &Lee;
-	strcpy(Sptr->name, "이순신");
+	strcpy_s(Sptr->name, "이순신");
 	Sptr->year = 2075;
 	Sptr->pay = 5900;
 
