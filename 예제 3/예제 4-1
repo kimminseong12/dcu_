@@ -1,0 +1,136 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_TERMS 100     
+
+typedef struct {
+    float coef;
+    int expon;
+} polynomial;
+
+polynomial terms[MAX_TERMS];
+int avail = 0;
+
+void attach(float coefficient, int exponent)
+{            
+    if (avail >= MAX_TERMS) {
+        printf(" 다항식에 항이 너무 많다.");
+        exit(1);
+    }
+    terms[avail].coef = coefficient;
+    terms[avail++].expon = exponent;
+}
+
+void attach2(float coefficient, int exponent, int s)   
+{
+    int i;
+    int j;
+
+    if (avail >= MAX_TERMS) {
+        printf("다항식에 항이 너무 많다.");
+        exit(1);
+    }
+    avail--;
+
+    i = avail;
+
+    for (j = i;j >= s;j--)
+    {
+        if (terms[j].expon == exponent)       
+        {
+            terms[j].coef += coefficient;
+            avail++;
+            return;
+        }
+        else
+            break;
+    }
+    avail++;
+    terms[avail].coef = coefficient;
+    terms[avail++].expon = exponent;
+}
+
+void print(int start, int finish)
+{
+    int i;
+    printf("\n");
+
+    if (start <= finish) {
+        for (i = start; i < finish; i++)
+            printf("%f x^ %d + ", terms[i].coef, terms[i].expon);
+        printf("%f x^ %d \n", terms[finish].coef, terms[finish].expon);
+    }
+    else
+        printf(" No terms ");
+
+}
+
+
+void pmult(int starta, int finisha, int startb, int finishb, int* startd, int* finishd)
+{    float coefficient;
+    int exponent;
+    int i, j;
+    int s;
+
+    *startd = avail;
+
+    for (i = starta; i <= finisha;i++)
+    {
+        for (j = startb;j <= finishb;j++)
+        {
+            coefficient = terms[i].coef * terms[j].coef;  
+            exponent = terms[i].expon + terms[j].expon; 
+            s = finisha + finishb;                        
+            attach2(coefficient, exponent, s);           
+        }
+    }
+
+    *finishd = avail - 1;
+
+}
+
+int main(int argc, char* argv[])
+{
+
+    int startA, finishA; 
+    int startB, finishB; 
+    int startC, finishC; 
+
+    int i, n, e;
+    float c;
+
+    printf("다항식의 곱셈 연산 수행!\n");
+    printf("다항식 A의 항의 수 : ");
+    scanf_s("%d", &n);
+
+    startA = avail;
+    for (i = 1; i <= n; i++) {
+        printf("\n다항식 A의 %d 번째 항의 계수와 지수 : ", i);
+        scanf_s("%f%d", &c, &e);
+
+        attach(c, e);
+    }
+    finishA = avail - 1;
+
+    print(startA, finishA);  
+
+    printf("\n다항식 B의 항의 수 : ");
+    scanf_s("%d", &n);
+
+    startB = avail;
+    for (i = 1; i <= n; i++) {
+        printf("\n다항식 B의 %d 번째 항의 계수와 지수 : ", i);
+        scanf_s("%f%d", &c, &e);
+
+        attach(c, e);
+    }
+    finishB = avail - 1;
+
+    print(startB, finishB);  
+
+    pmult(startA, finishA, startB, finishB, &startC, &finishC); 
+
+    printf(" \n 곱셈의 결과 : ");
+    print(startC, finishC);
+
+    return 0;
+}
